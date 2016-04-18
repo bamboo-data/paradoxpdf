@@ -44,6 +44,7 @@ class ParadoxPDF
         $this->debugEnabled = ($paradoxPDFINI->variable('DebugSettings', 'DebugPDF') == 'enabled');
         $this->debugVerbose = ($paradoxPDFINI->variable('DebugSettings', 'Verbose') == 'enabled');
         $this->javaExec = $paradoxPDFINI->variable('BinarySettings', 'JavaExecutable');
+        $this->disableSSL = ($paradoxPDFINI->variable('BinarySettings', 'DisableSSL') == 'enabled');
         $this->cacheTTL = $paradoxPDFINI->variable('CacheSettings', 'TTL');
         $this->paradoxPDFExec = eZDir::cleanPath('extension/paradoxpdf/bin/paradoxpdf.jar');
         $this->tmpDir = eZDir::path(array(eZINI::instance()->variable('FileSettings', 'VarDir'), 'paradoxpdf'));
@@ -302,7 +303,15 @@ class ParadoxPDF
 
     private function fixURL($html, $relative = false)
     {
-        $base_url = $relative ? '../..' : eZSys::serverURL();
+        if ( $relative ) {
+            $base_url = '../..';
+        }
+        elseif ( $this->disableSSL ) {
+            $base_url = str_replace( 'https://', 'http://', eZSys::serverURL() );
+        } else {
+            $base_url = eZSys::serverURL();
+        }
+
         $htmlfixed = preg_replace('#(<\s*(img|link)\s+[^>]*(href|src)\s*=\s*["\'])/?([^:"\'>]*)(["\'])#i', '$1' . $base_url . '/$4$5', $html);
         #$htmlfixed = preg_replace('#(@import)?\s*(url)?\s*(\()?\s*["\']/?([^"\'\);]*)["\']?\s*(\))?\s*;#i','$1 $2 $3"'.$base_url.'/$4"$5',$htmlfixed);
         return $htmlfixed;
