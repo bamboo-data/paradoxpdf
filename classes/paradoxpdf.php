@@ -37,7 +37,7 @@ class ParadoxPDF
     protected $cacheEnabled;
     protected $size;
 
-    function ParadoxPDF()
+    function __construct()
     {
         $paradoxPDFINI = eZINI::instance('paradoxpdf.ini');
         $this->cacheEnabled = ($paradoxPDFINI->variable('CacheSettings', 'PDFCache') == 'enabled');
