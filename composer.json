@@ -1,0 +1,7 @@
+{
+    "name": "paradoxe/paradoxpdf",
+    "type": "ezpublish-legacy-extension",
+    "require": {
+        "ezsystems/ezpublish-legacy-installer": "*"
+    }
+}
